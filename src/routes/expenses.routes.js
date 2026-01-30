@@ -17,6 +17,7 @@ router.route('/').post(protect, addExpense).get(protect, getExpenses);
 
 //Query params
 router.get('/:id', protect, getExpense);
+// router.get('/category', protect, getExpensesByCategories);
 router.get('/category/:id', protect, getExpensesByCategory);
 
 export default router;

@@ -59,4 +59,34 @@ export const getCategories = async (req, res) => {
     }
 };
 
-//todo get category by ID
+//fixme: // * Done get category by ID
+//@desc     get expense by category
+//@route    GET api/categories
+//@access   Private
+
+export const getExpenseByCategory = async (req, res) => {
+    const userID = req.user.user_id;
+
+    try {
+        const result = await pool.query(
+            `SELECT 
+                c.name AS category_name, 
+                COALESCE(SUM(e.amount), 0) AS total_amount 
+            FROM categories c
+            LEFT JOIN expenses e ON c.category_id = e.category_id
+            WHERE c.user_id = $1
+            GROUP BY c.category_id, c.name`,
+            [userID]
+        );
+
+        if (result.rows.length === 0) {
+            res.status(200).json([]);
+        }
+
+        res.status(200).json(result.rows);
+    } catch (error) {
+        res.status(500).json({
+            msg: `Server error ${error.message}`,
+        });
+    }
+};
